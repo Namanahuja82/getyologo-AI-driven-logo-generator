@@ -336,12 +336,14 @@ const Footer = () => {
 };
 
 // Hero Section Component
+// Hero Section Component with Responsive Image
+// Hero Section Component with Image Hidden on Mobile
 const HeroSection = () => {
   return (
     <div className="bg-gradient-to-r from-sky-500 to-indigo-600 text-white py-20">
       <div className="max-w-6xl mx-auto px-6">
         <div className="flex flex-col md:flex-row items-center">
-          <div className="md:w-1/2 mb-12 md:mb-0">
+          <div className="w-full md:w-1/2 mb-12 md:mb-0">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">
               Create Your Perfect Logo in 69 Seconds
             </h1>
@@ -364,11 +366,12 @@ const HeroSection = () => {
               </Link>
             </div>
           </div>
-          <div className="md:w-1/2">
+          {/* Image only displayed on medium screens and up (md:) */}
+          <div className="hidden md:block md:w-1/2">
             <div className="bg-white p-4 rounded-lg shadow-lg">
-              <div className="aspect-w-16 aspect-h-9 rounded-lg flex items-center justify-center h-64 relative">
+              <div className="relative aspect-w-16 aspect-h-9 h-64">
                 <Image
-                  src="/logo-preview.png" // Make sure to add this image to your public folder
+                  src="/logo-preview.png"
                   alt="AI-Generated Logo Preview"
                   fill
                   className="object-contain rounded-lg"
