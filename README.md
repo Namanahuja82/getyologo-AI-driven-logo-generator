@@ -19,11 +19,17 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 .env 
 
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
+
 CLERK_SECRET_KEY=
+
 CLOUDINARY_CLOUD_NAME=
+
 CLOUDINARY_API_KEY=
+
 CLOUDINARY_API_SECRET=
+
 HUGGING_FACE=
+
 GEMINI_API_KEY=
 
 You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
