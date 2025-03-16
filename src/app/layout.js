@@ -29,15 +29,6 @@ export default function RootLayout({ children }) {
     <ClerkProvider>
       <html lang="en">
         <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-          <header className="">
-            {/* <SignedOut>
-              <SignInButton />
-              <SignUpButton />
-            </SignedOut> */}
-            {/* <SignedIn>
-              <UserButton />
-            </SignedIn> */}
-          </header>
           {children}
         </body>
       </html>
