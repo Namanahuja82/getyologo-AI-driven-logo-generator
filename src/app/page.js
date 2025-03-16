@@ -125,6 +125,7 @@ const Features = () => {
 };
 
 // Testimonials Component
+// Testimonials Component
 const Testimonials = () => {
   const testimonials = [
     {
@@ -146,19 +147,19 @@ const Testimonials = () => {
       company: "Montreal",
     },
     {
-      text: "I appreciate the attention to detail in the designs from GetYoLogo. The small touches make a big difference, and it's evident that the creators focused on delivering a premium experience.",
+      text: "I appreciate the attention to detail in the designs from GetYoLogo. The small touches make a big difference, and it&apos;s evident that the creators focused on delivering a premium experience.",
       name: "Julia Stewart",
       position: "Senior Engineer",
       company: "Terra",
     },
     {
-      text: "I've tried other similar logo generators, but GetYoLogo stands out for its innovative features. It's clear that the makers put a lot of thought into creating a solution that truly addresses user needs.",
+      text: "I&apos;ve tried other similar logo generators, but GetYoLogo stands out for its innovative features. It&apos;s clear that the makers put a lot of thought into creating a solution that truly addresses user needs.",
       name: "John Smith",
       position: "Product Designer",
       company: "Colorado",
     },
     {
-      text: "The quality of logos from GetYoLogo exceeded my expectations. They're durable, well-designed, and built to last. Definitely worth the investment for any business looking to elevate their brand!",
+      text: "The quality of logos from GetYoLogo exceeded my expectations. They&apos;re durable, well-designed, and built to last. Definitely worth the investment for any business looking to elevate their brand!",
       name: "Daniel Wolf",
       position: "CDO",
       company: "Ankara",
@@ -179,7 +180,7 @@ const Testimonials = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {testimonials.map((testimonial, index) => (
             <div key={index} className="bg-white p-6 rounded-lg shadow-md">
-              <p className="text-gray-600 mb-6">"{testimonial.text}"</p>
+              <p className="text-gray-600 mb-6">&quot;{testimonial.text}&quot;</p>
               <div className="flex items-center">
                 <div className="w-12 h-12 bg-sky-200 rounded-full flex items-center justify-center text-sky-700 font-bold">
                   {testimonial.name.charAt(0)}
