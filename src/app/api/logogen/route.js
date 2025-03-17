@@ -1,4 +1,6 @@
-import { auth } from "@clerk/nextjs/server";
+// app/api/logogen/route.js
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+import { cookies } from 'next/headers';
 import dotenv from "dotenv";
 import fetch from "node-fetch";
 import cloudinary from "cloudinary";
@@ -17,7 +19,6 @@ cloudinary.v2.config({
 const apiKey = process.env.GEMINI_API_KEY;
 const genAI = new GoogleGenerativeAI(apiKey);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
 const generationConfig = {
   temperature: 1,
   topP: 0.95,
@@ -34,7 +35,7 @@ async function generatePrompt(businessName, keywords) {
     The logo should perfectly represent the essence of the business.
     Business Name: ${businessName}
     Keywords: ${keywords}
-    
+   
     The logo should be visually appealing, modern, and memorable, aligning with the business niche.
     Use a harmonious color scheme, balanced typography, and unique iconography.
     Your prompt should start with "Generate 1 logo" followed by the detailed description.`
@@ -55,11 +56,9 @@ async function fetchLogo(prompt) {
       body: JSON.stringify({ inputs: prompt }),
     }
   );
-
   if (!response.ok) {
     throw new Error(`Failed to generate logo: ${response.statusText}`);
   }
-
   const result = await response.arrayBuffer();
   return Buffer.from(result).toString("base64");
 }
@@ -81,25 +80,20 @@ async function uploadToCloudinary(base64String) {
 // **POST API Route**
 export async function POST(req) {
   try {
-    const authResult = await auth();
+    // Get Supabase client
+    const supabase = createRouteHandlerClient({ cookies });
 
-    const { userId } = authResult;
-
-    if (!userId) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-      });
+    // Check if user is authenticated
+    const { data: { session }, error: authError } = await supabase.auth.getSession();
+    if (authError || !session) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
     }
 
     // Parse request body
     const body = await req.json();
     const { businessName, keywords } = body;
-
     if (!businessName || !keywords) {
-      return new Response(
-        JSON.stringify({ error: "businessName and keywords are required" }),
-        { status: 400 }
-      );
+      return new Response(JSON.stringify({ error: "businessName and keywords are required" }), { status: 400 });
     }
 
     // Generate the AI prompt
@@ -114,8 +108,6 @@ export async function POST(req) {
     return new Response(JSON.stringify({ logoUrl: imageUrl }), { status: 200 });
   } catch (error) {
     console.error("Error generating logo:", error);
-    return new Response(JSON.stringify({ error: "Internal Server Error" }), {
-      status: 500,
-    });
+    return new Response(JSON.stringify({ error: "Internal Server Error" }), { status: 500 });
   }
 }

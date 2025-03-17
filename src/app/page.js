@@ -1,17 +1,40 @@
 "use client";
 
-import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
-// Navbar Component
-// Updated Navbar Component
+// Navbar Component with Supabase Auth
 const Navbar = () => {
-  const { isSignedIn, user } = useUser();
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const supabase = createClientComponentClient();
+
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setUser(session?.user || null);
+      setLoading(false);
+    };
+    
+    getUser();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setUser(session?.user || null);
+      }
+    );
+
+    return () => subscription.unsubscribe();
+  }, [supabase.auth]);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    router.push('/');
+  };
 
   return (
     <nav className="flex items-center justify-between py-4 px-6 shadow-sm bg-white">
@@ -29,7 +52,7 @@ const Navbar = () => {
         </Link>
       </div>
       <div className="flex space-x-4">
-        {isSignedIn ? (
+        {user ? (
           <>
             <Link
               href="/dashboard"
@@ -37,20 +60,27 @@ const Navbar = () => {
             >
               Dashboard
             </Link>
-            <UserButton afterSignOutUrl="/" />
+            <button 
+              onClick={handleSignOut} 
+              className="px-4 py-2 text-gray-600 hover:text-sky-500"
+            >
+              Sign out
+            </button>
           </>
         ) : (
           <>
-            <SignInButton mode="modal">
-              <button className="px-4 py-2 text-sky-500 border border-sky-500 rounded hover:bg-sky-50">
-                Sign in
-              </button>
-            </SignInButton>
-            <SignUpButton mode="modal">
-              <button className="px-4 py-2 text-white bg-sky-500 rounded hover:bg-sky-600">
-                Sign up
-              </button>
-            </SignUpButton>
+            <Link 
+              href="/sign-in" 
+              className="px-4 py-2 text-sky-500 border border-sky-500 rounded hover:bg-sky-50"
+            >
+              Sign in
+            </Link>
+            <Link 
+              href="/sign-up" 
+              className="px-4 py-2 text-white bg-sky-500 rounded hover:bg-sky-600"
+            >
+              Sign up
+            </Link>
           </>
         )}
       </div>
@@ -124,7 +154,6 @@ const Features = () => {
   );
 };
 
-// Testimonials Component
 // Testimonials Component
 const Testimonials = () => {
   const testimonials = [
@@ -337,9 +366,13 @@ const Footer = () => {
 };
 
 // Hero Section Component
-// Hero Section Component with Responsive Image
-// Hero Section Component with Image Hidden on Mobile
 const HeroSection = () => {
+  const supabase = createClientComponentClient();
+  
+  const handleGetStarted = () => {
+    window.location.href = '/sign-up';
+  };
+
   return (
     <div className="bg-gradient-to-r from-sky-500 to-indigo-600 text-white py-20">
       <div className="max-w-6xl mx-auto px-6">
@@ -354,11 +387,12 @@ const HeroSection = () => {
               describe your vision and watch it come to life.
             </p>
             <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-              <SignUpButton mode="modal">
-                <button className="bg-white text-sky-600 font-bold py-3 px-6 rounded-lg hover:bg-gray-100 text-center w-full sm:w-auto">
-                  Get Started Free
-                </button>
-              </SignUpButton>
+              <button 
+                onClick={handleGetStarted}
+                className="bg-white text-sky-600 font-bold py-3 px-6 rounded-lg hover:bg-gray-100 text-center w-full sm:w-auto"
+              >
+                Get Started Free
+              </button>
               <Link
                 href="#features"
                 className="bg-transparent border-2 border-white py-3 px-6 rounded-lg hover:bg-white/10 text-center"
@@ -367,7 +401,6 @@ const HeroSection = () => {
               </Link>
             </div>
           </div>
-          {/* Image only displayed on medium screens and up (md:) */}
           <div className="hidden md:block md:w-1/2">
             <div className="bg-white p-4 rounded-lg shadow-lg">
               <div className="relative aspect-w-16 aspect-h-9 h-64">
@@ -388,16 +421,37 @@ const HeroSection = () => {
 
 // Main Home/Landing Page
 export default function Home() {
-  const { isSignedIn } = useUser();
+  const [isSignedIn, setIsSignedIn] = useState(false);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const supabase = createClientComponentClient();
 
   useEffect(() => {
-    if (isSignedIn) {
-      router.push("/dashboard");
-    }
-  }, [isSignedIn, router]);
+    const checkUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setIsSignedIn(!!session);
+      setLoading(false);
+      
+      if (session) {
+        router.push("/dashboard");
+      }
+    };
+    
+    checkUser();
 
-  if (isSignedIn === undefined) {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setIsSignedIn(!!session);
+        if (session) {
+          router.push("/dashboard");
+        }
+      }
+    );
+
+    return () => subscription.unsubscribe();
+  }, [router, supabase.auth]);
+
+  if (loading) {
     // Loading state
     return (
       <div className="flex items-center justify-center h-screen">
