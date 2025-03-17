@@ -3,10 +3,10 @@ import { useState } from "react";
 // import { supabase } from "../../lib/supabase";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 export default function SignIn() {
-    const supabase = createClientComponentClient();
+  const supabase = createClientComponentClient();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -18,13 +18,13 @@ export default function SignIn() {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    
+
     try {
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
-      
+
       if (error) throw error;
       router.push("/dashboard");
     } catch (error) {
@@ -40,13 +40,13 @@ export default function SignIn() {
         <h1 className="text-3xl font-bold text-center mb-6 text-gray-800">
           Sign In to GetYoLogo
         </h1>
-        
+
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
             {error}
           </div>
         )}
-        
+
         <form onSubmit={handleSignIn} className="space-y-4">
           <div>
             <label className="block text-gray-700 mb-2">Email</label>
@@ -58,7 +58,7 @@ export default function SignIn() {
               required
             />
           </div>
-          
+
           <div>
             <label className="block text-gray-700 mb-2">Password</label>
             <input
@@ -69,7 +69,7 @@ export default function SignIn() {
               required
             />
           </div>
-          
+
           <button
             type="submit"
             disabled={loading}
@@ -78,15 +78,18 @@ export default function SignIn() {
             {loading ? "Signing in..." : "Sign In"}
           </button>
         </form>
-        
+
         <div className="mt-6 text-center">
           <p className="text-gray-600">
-            Don't have an account? {" "}
+            Don&apos;t have an account?{" "}
             <Link href="/sign-up" className="text-sky-500 hover:text-sky-600">
               Sign up
             </Link>
           </p>
-          <Link href="/" className="block mt-2 text-gray-500 hover:text-gray-700">
+          <Link
+            href="/"
+            className="block mt-2 text-gray-500 hover:text-gray-700"
+          >
             Back to Home
           </Link>
         </div>
